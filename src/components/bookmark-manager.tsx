@@ -19,45 +19,51 @@ export function BookmarkManager({ initialBookmarks }: { initialBookmarks: Bookma
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks)
   
   // Realtime subscription
+  // Realtime subscription
   useEffect(() => {
-    // Unique channel name to avoid collisions in dev mode
+    // Unique channel name
     const channelName = `realtime-bookmarks-${Math.random()}`
-    
-    // Clean up any existing subscription first
-    // supabase.removeAllChannels() 
+    let channel: any;
 
-    const channel = supabase
-      .channel(channelName)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'bookmarks' 
-      }, (payload) => {
-        const newBookmark = payload.new as Bookmark
-        setBookmarks((prev) => {
-            if (prev.some(b => b.id === newBookmark.id)) return prev
-            return [newBookmark, ...prev]
+    const setupSubscription = async () => {
+        // Ensure we have a session first so RLS works
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) return
+
+        channel = supabase
+        .channel(channelName)
+        .on('postgres_changes', { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'bookmarks' 
+        }, (payload) => {
+            console.log('Realtime INSERT:', payload)
+            const newBookmark = payload.new as Bookmark
+            setBookmarks((prev) => {
+                if (prev.some(b => b.id === newBookmark.id)) return prev
+                return [newBookmark, ...prev]
+            })
         })
-      })
-      .on('postgres_changes', { 
-        event: 'DELETE', 
-        schema: 'public', 
-        table: 'bookmarks' 
-      }, (payload) => {
-        setBookmarks((prev) => prev.filter(b => b.id !== payload.old.id))
-      })
-      .subscribe((status, err) => {
-          if (status === 'SUBSCRIBED') {
-            // console.log('Ready for realtime updates')
-          }
-          if (status === 'CHANNEL_ERROR') {
-              console.error('Realtime Error:', err)
-          }
-      })
+        .on('postgres_changes', { 
+            event: 'DELETE', 
+            schema: 'public', 
+            table: 'bookmarks' 
+        }, (payload) => {
+            console.log('Realtime DELETE:', payload)
+            setBookmarks((prev) => prev.filter(b => b.id !== payload.old.id))
+        })
+        .subscribe((status, err) => {
+            if (status === 'CHANNEL_ERROR') {
+                console.error('Realtime Error:', err)
+            }
+        })
+    }
+
+    setupSubscription()
 
     return () => {
-      // Robust cleanup
-      supabase.removeChannel(channel)
+      if (channel) supabase.removeChannel(channel)
     }
   }, [supabase])
 
