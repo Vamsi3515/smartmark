@@ -42,7 +42,7 @@ export default async function Home() {
           )}
           
           <a
-            href="https://github.com"
+            href="https://github.com/Vamsi3515/smartmark"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-md ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:shadow-lg dark:bg-zinc-800 dark:text-gray-200 dark:ring-zinc-700 dark:hover:bg-zinc-750"
