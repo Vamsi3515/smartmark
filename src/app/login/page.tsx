@@ -4,6 +4,7 @@
 import { createClient } from '@/utils/supabase/client'
 import { Bookmark, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
@@ -28,7 +29,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-zinc-900 px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-zinc-900 px-4">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4 animate-in fade-in zoom-in duration-500">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-sm space-y-8 text-center">
         <div className="flex flex-col items-center gap-2">
           <div className="rounded-xl bg-blue-600 p-3 shadow-lg">

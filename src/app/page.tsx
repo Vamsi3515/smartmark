@@ -2,6 +2,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { Bookmark, LayoutDashboard } from 'lucide-react'
 import Link from 'next/link'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -9,6 +10,11 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-zinc-900 px-4">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-4xl space-y-8 text-center">
         <div className="flex flex-col items-center gap-4">
           <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 p-4 shadow-xl">
